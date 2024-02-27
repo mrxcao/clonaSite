@@ -1,0 +1,16 @@
+{
+  "name": "clonasite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "js-beautify": "^1.15.1",
+    "puppeteer": "^22.3.0"
+  }
+}

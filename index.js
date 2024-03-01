@@ -55,17 +55,10 @@ const downloadResource = async (url, localPath) => {
   });
   const allCssContent = inlineStyles.join(' ');
   const fontUrlsS = extractFontUrlsFromCSS(allCssContent);
-  for (const fontUrl of fontUrlsS) {
-    console.log('fontUrl',url +'/'+ fontUrl);
-    const fontName = path.basename(new URL(url+'/'+fontUrl).pathname);
-    console.log('fontName',fontName);
+  for (const fontUrl of fontUrlsS) {    
+    const fontName = path.basename(new URL(url+'/'+fontUrl).pathname);    
     await downloadResource(url+'/'+fontUrl, path.join(__dirname+outDir, fontName));
-    // Aqui você faria a substituição da URL da fonte no conteúdo CSS por uma referência local
   }
-
-
-  
-  
 
   // CSSs
   const cssFiles = await page.evaluate(() => Array.from(document.querySelectorAll('link[rel="stylesheet"]'), e => e.href));

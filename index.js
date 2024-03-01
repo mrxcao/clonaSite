@@ -62,14 +62,12 @@ const downloadResource = async (url, localPath) => {
 
   // CSSs
   const cssFiles = await page.evaluate(() => Array.from(document.querySelectorAll('link[rel="stylesheet"]'), e => e.href));
-  // Buscar fontes dentro do css
   for (const cssFile of cssFiles) {
     const cssContent = await page.evaluate(async (url) => {
       const response = await fetch(url);
       return await response.text();
     }, cssFile);
     const fontUrls = extractFontUrlsFromCSS(cssContent);
-    // Download de cada fonte
     for (const fontUrl of fontUrls) {
       const fontName = path.basename(new URL(fontUrl).pathname);
       await downloadResource(fontUrl, path.join(__dirname+outDir, fontName));

@@ -4,7 +4,7 @@ const path = require('path');
 const axios = require('axios');
 const beautify = require('js-beautify').html; 
 
-const url = ''
+const url = 'https://mrxcaoteste.my.canva.site/teste3'
 const outDir = '/download/'
 
 
@@ -44,25 +44,47 @@ const downloadResource = async (url, localPath) => {
     const imageName = path.basename(new URL(imageUrl).pathname);
     await downloadResource(imageUrl, path.join(__dirname+outDir, imageName));
   }
+ 
+  
+  
+  // Fontes dentro do HTML
+  const inlineStyles = await page.evaluate(() => {
+    const styles = Array.from(document.querySelectorAll('style')).map(style => style.textContent);
+    const inlineStyles = Array.from(document.querySelectorAll('[style]')).map(element => element.getAttribute('style'));
+    return styles.concat(inlineStyles);
+  });
+  const allCssContent = inlineStyles.join(' ');
+  const fontUrlsS = extractFontUrlsFromCSS(allCssContent);
+  for (const fontUrl of fontUrlsS) {
+    console.log('fontUrl',url +'/'+ fontUrl);
+    const fontName = path.basename(new URL(url+'/'+fontUrl).pathname);
+    console.log('fontName',fontName);
+    await downloadResource(url+'/'+fontUrl, path.join(__dirname+outDir, fontName));
+    // Aqui você faria a substituição da URL da fonte no conteúdo CSS por uma referência local
+  }
+
+
+  
+  
 
   // CSSs
   const cssFiles = await page.evaluate(() => Array.from(document.querySelectorAll('link[rel="stylesheet"]'), e => e.href));
-
-  // Buscar fontes
+  // Buscar fontes dentro do css
   for (const cssFile of cssFiles) {
     const cssContent = await page.evaluate(async (url) => {
       const response = await fetch(url);
       return await response.text();
     }, cssFile);
-
     const fontUrls = extractFontUrlsFromCSS(cssContent);
-    
     // Download de cada fonte
     for (const fontUrl of fontUrls) {
       const fontName = path.basename(new URL(fontUrl).pathname);
-      await downloadResource(fontUrl, path.join(__dirname, fontName));
+      await downloadResource(fontUrl, path.join(__dirname+outDir, fontName));
     }
   }
+
+
+
 
   // Salva o HTML modificado (após substituir URLs de recursos)
   const beautifulContent = beautify(content, { 
